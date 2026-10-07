@@ -1,1 +1,1010 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Fitism - AI Nutrition Tracker</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#08080d;
+    color:white;
+    min-height:100vh;
+}
+
+header{
+    max-width:1100px;
+    margin:auto;
+    padding:22px;
+}
+
+.logo{
+    font-size:29px;
+    font-weight:800;
+}
+
+.logo span{
+    color:#8b5cf6;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+.hero{
+    padding:40px 28px;
+    border-radius:25px;
+    background:linear-gradient(135deg,#151024,#241544);
+    border:1px solid #332456;
+    margin-bottom:25px;
+}
+
+.hero h1{
+    font-size:40px;
+    margin-bottom:12px;
+}
+
+.hero p{
+    color:#aaa;
+    line-height:1.6;
+}
+
+.scan-btn{
+    margin-top:25px;
+    padding:15px 22px;
+    border:0;
+    border-radius:13px;
+    background:#8b5cf6;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.scan-btn:hover{
+    opacity:.9;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.card,
+.macro,
+.meals{
+    background:#111118;
+    border:1px solid #252532;
+    border-radius:18px;
+}
+
+.card{
+    padding:22px;
+}
+
+.card h3,
+.macro h3{
+    color:#888;
+    font-size:13px;
+    margin-bottom:10px;
+}
+
+.big{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.macros{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.macro{
+    padding:20px;
+}
+
+.macro p{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.meals{
+    padding:22px;
+}
+
+.meals h2{
+    margin-bottom:15px;
+}
+
+.meal{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    padding:16px 0;
+    border-bottom:1px solid #252532;
+}
+
+.meal:last-child{
+    border-bottom:0;
+}
+
+.meal-name{
+    font-weight:bold;
+}
+
+.meal-info{
+    color:#888;
+    font-size:13px;
+    margin-top:5px;
+}
+
+.meal-cal{
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+.empty{
+    color:#777;
+    padding:15px 0;
+}
+
+
+/* MODAL */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.82);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-box{
+    width:100%;
+    max-width:500px;
+    max-height:90vh;
+    overflow:auto;
+    background:#111118;
+    border:1px solid #342653;
+    border-radius:22px;
+    padding:24px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.close{
+    background:none;
+    border:0;
+    color:white;
+    font-size:27px;
+    cursor:pointer;
+}
+
+.upload{
+    display:block;
+    text-align:center;
+    padding:30px 15px;
+    border:2px dashed #403456;
+    border-radius:17px;
+    cursor:pointer;
+}
+
+.upload:hover{
+    border-color:#8b5cf6;
+}
+
+.upload input{
+    display:none;
+}
+
+.preview{
+    display:none;
+    width:100%;
+    max-height:260px;
+    object-fit:cover;
+    border-radius:15px;
+    margin-top:15px;
+}
+
+.analyze{
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+    border:0;
+    border-radius:12px;
+    background:#8b5cf6;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.analyze:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.loading{
+    display:none;
+    text-align:center;
+    padding:20px;
+    color:#aaa;
+}
+
+.error{
+    display:none;
+    margin-top:15px;
+    color:#ff7777;
+}
+
+.result{
+    display:none;
+    margin-top:20px;
+    padding:20px;
+    background:#181820;
+    border-radius:17px;
+}
+
+.result h2{
+    margin-bottom:5px;
+}
+
+.portion{
+    color:#888;
+    margin-bottom:18px;
+}
+
+.nutrition{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
+
+.nut{
+    background:#101017;
+    padding:15px;
+    border-radius:12px;
+}
+
+.nut span{
+    color:#888;
+    font-size:13px;
+}
+
+.nut strong{
+    display:block;
+    font-size:20px;
+    margin-top:5px;
+}
+
+.add-btn{
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+    border:0;
+    border-radius:12px;
+    background:#292035;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.note{
+    margin-top:12px;
+    color:#777;
+    font-size:11px;
+    line-height:1.5;
+}
+
+@media(max-width:700px){
+
+    .cards,
+    .macros{
+        grid-template-columns:1fr;
+    }
+
+    .hero h1{
+        font-size:31px;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+<header>
+    <div class="logo">
+        Fit<span>ism</span>
+    </div>
+</header>
+
+
+<div class="container">
+
+    <section class="hero">
+
+        <h1>Eat smart. Track better.</h1>
+
+        <p>
+            Scan your food with AI and get an estimated
+            breakdown of calories, protein, carbs and fat.
+        </p>
+
+        <button class="scan-btn" onclick="openScanner()">
+            📸 Scan Your Food
+        </button>
+
+    </section>
+
+
+    <section class="cards">
+
+        <div class="card">
+            <h3>DAILY CALORIES</h3>
+            <div class="big">
+                <span id="totalCalories">0</span> kcal
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>PROTEIN</h3>
+            <div class="big">
+                <span id="totalProtein">0</span> g
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>MEALS</h3>
+            <div class="big">
+                <span id="mealCount">0</span>
+            </div>
+        </div>
+
+    </section>
+
+
+    <section class="macros">
+
+        <div class="macro">
+            <h3>CARBS</h3>
+            <p>
+                <span id="totalCarbs">0</span> g
+            </p>
+        </div>
+
+        <div class="macro">
+            <h3>FAT</h3>
+            <p>
+                <span id="totalFat">0</span> g
+            </p>
+        </div>
+
+        <div class="macro">
+            <h3>PROTEIN</h3>
+            <p>
+                <span id="macroProtein">0</span> g
+            </p>
+        </div>
+
+    </section>
+
+
+    <section class="meals">
+
+        <h2>🍽️ Meal History</h2>
+
+        <div id="mealHistory">
+            <div class="empty">
+                No meals added yet. Scan your first meal!
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+
+
+<!-- SCANNER -->
+
+<div class="modal" id="scannerModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>📸 Scan Food</h2>
+
+            <button
+                class="close"
+                onclick="closeScanner()">
+                ×
+            </button>
+
+        </div>
+
+
+        <label class="upload">
+
+            📷
+            <br><br>
+
+            <strong>
+                Take a photo or choose an image
+            </strong>
+
+            <br>
+
+            <small style="color:#777">
+                JPG, PNG or WEBP
+            </small>
+
+            <input
+                type="file"
+                id="foodImage"
+                accept="image/*"
+                capture="environment"
+                onchange="previewFood(event)"
+            >
+
+        </label>
+
+
+        <img
+            id="preview"
+            class="preview"
+            alt="Food preview"
+        >
+
+
+        <button
+            id="analyzeBtn"
+            class="analyze"
+            onclick="analyzeFood()"
+            disabled>
+
+            Analyze Food
+
+        </button>
+
+
+        <div
+            class="loading"
+            id="loading">
+
+            🔍 AI is analyzing your food...
+
+        </div>
+
+
+        <div
+            class="error"
+            id="error">
+        </div>
+
+
+        <div
+            class="result"
+            id="result">
+
+            <h2 id="foodName">
+                Food
+            </h2>
+
+            <div
+                class="portion"
+                id="foodPortion">
+                Estimated portion
+            </div>
+
+
+            <div class="nutrition">
+
+                <div class="nut">
+                    <span>Calories</span>
+                    <strong id="foodCalories">
+                        0 kcal
+                    </strong>
+                </div>
+
+                <div class="nut">
+                    <span>Protein</span>
+                    <strong id="foodProtein">
+                        0 g
+                    </strong>
+                </div>
+
+                <div class="nut">
+                    <span>Carbs</span>
+                    <strong id="foodCarbs">
+                        0 g
+                    </strong>
+                </div>
+
+                <div class="nut">
+                    <span>Fat</span>
+                    <strong id="foodFat">
+                        0 g
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <button
+                class="add-btn"
+                onclick="addMeal()">
+
+                ➕ Add To Today's Meals
+
+            </button>
+
+
+            <div class="note">
+                Nutrition values are estimates.
+                A photo cannot determine exact ingredients
+                or portion weight.
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+let currentFood = null;
+
+let meals = JSON.parse(
+    localStorage.getItem("fitismMeals") || "[]"
+);
+
+
+/* OPEN SCANNER */
+
+function openScanner(){
+
+    document.getElementById(
+        "scannerModal"
+    ).style.display = "flex";
+
+}
+
+
+/* CLOSE SCANNER */
+
+function closeScanner(){
+
+    document.getElementById(
+        "scannerModal"
+    ).style.display = "none";
+
+}
+
+
+/* PREVIEW IMAGE */
+
+function previewFood(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file) return;
+
+
+    const preview =
+        document.getElementById("preview");
+
+    const button =
+        document.getElementById("analyzeBtn");
+
+
+    preview.src =
+        URL.createObjectURL(file);
+
+    preview.style.display = "block";
+
+    button.disabled = false;
+
+
+    document.getElementById(
+        "result"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "error"
+    ).style.display = "none";
+}
+
+
+/* AI FOOD ANALYSIS */
+
+async function analyzeFood(){
+
+    const file =
+        document.getElementById(
+            "foodImage"
+        ).files[0];
+
+
+    if(!file){
+
+        showError(
+            "Please choose a food photo first."
+        );
+
+        return;
+    }
+
+
+    const loading =
+        document.getElementById(
+            "loading"
+        );
+
+    const button =
+        document.getElementById(
+            "analyzeBtn"
+        );
+
+
+    loading.style.display = "block";
+
+    button.disabled = true;
+
+
+    try{
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "image",
+            file
+        );
+
+
+        /*
+        IMPORTANT:
+        Replace this URL with your
+        deployed backend URL.
+        */
+
+        const response =
+            await fetch(
+                "YOUR_BACKEND_URL/analyze-food",
+                {
+                    method:"POST",
+                    body:formData
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Server error"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        currentFood = data;
+
+
+        document.getElementById(
+            "foodName"
+        ).textContent =
+            data.food;
+
+
+        document.getElementById(
+            "foodPortion"
+        ).textContent =
+            "Estimated portion: " +
+            data.portion;
+
+
+        document.getElementById(
+            "foodCalories"
+        ).textContent =
+            data.calories + " kcal";
+
+
+        document.getElementById(
+            "foodProtein"
+        ).textContent =
+            data.protein + " g";
+
+
+        document.getElementById(
+            "foodCarbs"
+        ).textContent =
+            data.carbs + " g";
+
+
+        document.getElementById(
+            "foodFat"
+        ).textContent =
+            data.fat + " g";
+
+
+        document.getElementById(
+            "result"
+        ).style.display = "block";
+
+
+    }catch(error){
+
+        console.error(error);
+
+        showError(
+            "Unable to analyze the food. Check your backend connection."
+        );
+
+    }finally{
+
+        loading.style.display = "none";
+
+        button.disabled = false;
+
+    }
+
+}
+
+
+/* ADD MEAL */
+
+function addMeal(){
+
+    if(!currentFood) return;
+
+
+    meals.push({
+
+        id:Date.now(),
+
+        food:currentFood.food,
+
+        portion:currentFood.portion,
+
+        calories:Number(
+            currentFood.calories
+        ) || 0,
+
+        protein:Number(
+            currentFood.protein
+        ) || 0,
+
+        carbs:Number(
+            currentFood.carbs
+        ) || 0,
+
+        fat:Number(
+            currentFood.fat
+        ) || 0
+
+    });
+
+
+    localStorage.setItem(
+        "fitismMeals",
+        JSON.stringify(meals)
+    );
+
+
+    updateDashboard();
+
+    closeScanner();
+
+}
+
+
+/* UPDATE DASHBOARD */
+
+function updateDashboard(){
+
+    let calories = 0;
+    let protein = 0;
+    let carbs = 0;
+    let fat = 0;
+
+
+    meals.forEach(meal => {
+
+        calories +=
+            Number(meal.calories) || 0;
+
+        protein +=
+            Number(meal.protein) || 0;
+
+        carbs +=
+            Number(meal.carbs) || 0;
+
+        fat +=
+            Number(meal.fat) || 0;
+
+    });
+
+
+    document.getElementById(
+        "totalCalories"
+    ).textContent =
+        Math.round(calories);
+
+
+    document.getElementById(
+        "totalProtein"
+    ).textContent =
+        Math.round(protein);
+
+
+    document.getElementById(
+        "macroProtein"
+    ).textContent =
+        Math.round(protein);
+
+
+    document.getElementById(
+        "totalCarbs"
+    ).textContent =
+        Math.round(carbs);
+
+
+    document.getElementById(
+        "totalFat"
+    ).textContent =
+        Math.round(fat);
+
+
+    document.getElementById(
+        "mealCount"
+    ).textContent =
+        meals.length;
+
+
+    renderMeals();
+
+}
+
+
+/* MEAL HISTORY */
+
+function renderMeals(){
+
+    const container =
+        document.getElementById(
+            "mealHistory"
+        );
+
+
+    if(meals.length === 0){
+
+        container.innerHTML = `
+            <div class="empty">
+                No meals added yet.
+                Scan your first meal!
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    [...meals]
+        .reverse()
+        .forEach(meal => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className = "meal";
+
+
+            div.innerHTML = `
+
+                <div>
+
+                    <div class="meal-name">
+                        ${escapeHTML(meal.food)}
+                    </div>
+
+                    <div class="meal-info">
+                        ${escapeHTML(meal.portion)}
+                        • ${meal.protein}g protein
+                        • ${meal.carbs}g carbs
+                        • ${meal.fat}g fat
+                    </div>
+
+                </div>
+
+                <div class="meal-cal">
+                    ${meal.calories} kcal
+                </div>
+
+            `;
+
+
+            container.appendChild(div);
+
+        });
+
+}
+
+
+/* ERROR */
+
+function showError(message){
+
+    const error =
+        document.getElementById(
+            "error"
+        );
+
+    error.textContent = message;
+
+    error.style.display = "block";
+
+}
+
+
+/* SECURITY */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+
+/* START */
+
+updateDashboard();
+
+</script>
+
+</body>
+</html>
